@@ -1,0 +1,50 @@
+dns:
+  image: tonistiigi/dnsdock
+  container_name: dns
+  volumes:
+    - /var/run/docker.sock:/run/docker.sock
+  ports:
+    - 172.17.42.1:53:53/udp
+  command: /go/bin/dnsdock -domain dc
+
+postgres:
+  image: postgres:9.5.2
+  dns: 172.17.42.1
+  ports:
+    - "5433:5432"
+  environment:
+     DEBUG: true
+     POSTGRES_USER: gawain
+     POSTGRES_PASSWORD: gawain
+     POSTGRES_DB: gawain
+     DNSDOCK_ALIAS: postgres.dc
+
+mongodb:
+  image: mongo:latest
+  container_name: mongodb
+  dns: 172.17.42.1
+  ports:
+    - 27018:27017
+  environment:
+    DNSDOCK_ALIAS: mongodb.dc
+  command: /usr/bin/mongod --replSet gawain --smallfiles
+
+mongoinit:
+  image: tutum/mongodb:latest
+  container_name: mongoinit
+  dns: 172.17.42.1
+  environment:
+    DNSDOCK_ALIAS: mongoinit.dc
+  volumes:
+    - .:/etc/mongodb:ro
+  command: /bin/bash /etc/mongodb/mongo-init.sh
+
+activemq:
+  image: rmohr/activemq
+  container_name: activemq
+  dns: 172.17.42.1
+  ports:
+    - 61617:61616
+    - 8162:8161
+  environment:
+    DNSDOCK_ALIAS: activemq.dc

@@ -1,0 +1,26 @@
+apply plugin: 'groovy'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-log4j12:1.7.15'
+    compile 'me.smecsia.gawain:gawain-core:0.1.5'
+    compile 'me.smecsia.gawain:gawain-mongodb:0.1.5'
+    compile 'me.smecsia.gawain:gawain-jdbc:0.1.5'
+    compile 'me.smecsia.gawain:gawain-jackson:0.1.5'
+    compile 'me.smecsia.gawain:gawain-activemq:0.1.5'
+
+    compile 'org.postgresql:postgresql:9.3-1100-jdbc41'
+    compile 'ru.yandex.qatools.embed:embedded-services:1.20'
+    compile 'org.apache.activemq:activemq-broker:5.13.1'
+    compile 'org.apache.activemq:activemq-kahadb-store:5.13.1'
+}
+
+task run (type: JavaExec, dependsOn: classes){
+    args = (System.getProperty('args')?: '').split(',') as List
+    main = 'me.smecsia.gawain.ExampleLauncher'
+    classpath = sourceSets.main.runtimeClasspath
+}
